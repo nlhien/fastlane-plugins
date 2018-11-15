@@ -1,0 +1,3 @@
+lane :test do
+  build_ios_framework
+end
