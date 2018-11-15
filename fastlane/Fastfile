@@ -1,12 +1,25 @@
 lane :test do
   # build_ios_framework(project: 'Test/Test.xcodeproj', scheme: 'Test')
-  submit_jenkins_description(
-  	url: 'http://192.168.90.12:8080',
-  	job: 'DIANA-Throughput-Test-iOS',
-  	build: 19,
+  # submit_jenkins_description(
+  # 	url: 'http://192.168.90.12:8080',
+  # 	job: 'DIANA-Throughput-Test-iOS',
+  # 	build: 19,
+  # 	auth: {
+  # 		username: 'nlhien',
+  # 		token: '119ed8139a4928f702d2de266390921919'
+  # 	},
+  # 	description: 'hello jenkins')
+
+
+  upload_build_to_tester(
+  	url: 'https://tester.misfit.com',
+  	version: 101,
+  	build_number: 1221,
   	auth: {
-  		username: 'nlhien',
-  		token: '119ed8139a4928f702d2de266390921919'
+  		username: 'misfit',
+  		password: 'Spring12345'
   	},
-  	description: 'hello jenkins')
+  	appid: 'com.misfitwearables.diana.staging.tdqu',
+  	file: '/Users/hien/Documents/Workspace/fastlane-plugin-fossil_build_utils/WatchKity-56.ipa'
+  )
 end
