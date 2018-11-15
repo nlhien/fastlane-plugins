@@ -6,21 +6,29 @@ module Fastlane
 
     class SubmitJenkinsDescriptionAction < Action
       def self.run(params)
-        require 'net/http'
-        require 'uri'
+        require 'rest-client'
+
         auth        = params[:auth]
         url         = params[:url]
         job         = params[:job]
         build       = params[:build]
-        uri = URI.parse("#{url}/job/#{job}/#{build}/submitDescription")
-        req = Net::HTTP::Post.new(uri.path)
 
-        req.basic_auth auth[:username], auth[:token]
+        request = RestClient::Request.new(
+          :method => :post,
+          :url => "#{url}/job/#{job}/#{build}/submitDescription",
+          :user => auth[:username],
+          :password => auth[:token],
+          :payload => {
+            :description => params[:description]
+          })
 
-        req.form_data = {'description': params[:description]}
-        res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-          http.request(req)
+        begin
+          response = request.execute
+        rescue RestClient::ExceptionWithResponse => err
+          UI.error(err.response)
         end
+
+        UI.success('Update build description success!!!')
       end
 
       #####################################################
