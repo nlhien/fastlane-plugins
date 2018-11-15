@@ -2,10 +2,10 @@ lane :test do
 	submit_jenkins_description(
       url: 'http://192.168.90.12:8080',
       job: 'DIANA-Throughput-Test-iOS',
-      build: 12,
+      build: 63,
       auth: {
         username: 'nlhien',
-        token: '119ed8139a4928f702d2de266390921919'
+        token: '119ed8139a4928f702d2de2663909219191'
       },
       description: "111")
 end

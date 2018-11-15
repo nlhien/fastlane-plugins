@@ -13,22 +13,22 @@ module Fastlane
         job         = params[:job]
         build       = params[:build]
 
-        request = RestClient::Request.new(
-          :method => :post,
-          :url => "#{url}/job/#{job}/#{build}/submitDescription",
-          :user => auth[:username],
-          :password => auth[:token],
-          :payload => {
-            :description => params[:description]
-          })
-
         begin
-          response = request.execute
+          UI.message("Submit description: #{params[:description]}")
+          response = RestClient::Request.execute(
+            :method => :post,
+            :url => "#{url}/job/#{job}/#{build}/submitDescription",
+            :user => auth[:username],
+            :password => auth[:token],
+            :payload => {
+              :multipart => true,
+              :description => params[:description]
+            })
         rescue RestClient::ExceptionWithResponse => err
-          UI.error(err.response)
+          UI.user_error!(err.response.to_s)
         end
-
-        UI.success('Update build description success!!!')
+        
+        UI.message("Update build description success!!!")
       end
 
       #####################################################

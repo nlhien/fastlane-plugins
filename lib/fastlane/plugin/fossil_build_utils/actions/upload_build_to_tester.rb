@@ -32,8 +32,6 @@ module Fastlane
         rescue RestClient::ExceptionWithResponse => err
           UI.user_error! err.response
         end
-
-        UI.success('Upload success!!!: ' + response)
       end
 
       #####################################################
