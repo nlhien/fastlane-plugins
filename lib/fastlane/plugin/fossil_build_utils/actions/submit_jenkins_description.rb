@@ -25,7 +25,7 @@ module Fastlane
               :description => params[:description]
             })
         rescue RestClient::ExceptionWithResponse => err
-          UI.error(err.response.to_s)
+          UI.error(err.to_s)
           return 1
         end
 
