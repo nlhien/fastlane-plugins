@@ -25,10 +25,12 @@ module Fastlane
               :description => params[:description]
             })
         rescue RestClient::ExceptionWithResponse => err
-          UI.user_error!(err.response.to_s)
+          UI.error(err.response.to_s)
+          return 1
         end
-        
+
         UI.message("Update build description success!!!")
+        return 0
       end
 
       #####################################################
