@@ -5,29 +5,10 @@ module Fastlane
     end
 
     class BuildIosFrameworkAction < Action
-      def self.lipo(params)
-        output = params[:output]
-        framework_name = params[:framework_name]
-        iphoneos_framework = params[:iphoneos_framework]
-        simulator_framework = params[:simulator_framework]
-
-        # run lipo command
-        Fastlane::Actions.sh(
-          "xcrun lipo -create #{simulator_framework}/#{framework_name} #{iphoneos_framework}/#{framework_name} -output #{iphoneos_framework}/#{framework_name}",
-          log: true)
-
-        Fastlane::Actions.sh("/bin/rm -rf #{output}")
-
-        Fastlane::Actions.sh("/bin/mkdir #{output}")
-
-        # copy output folder.
-        Fastlane::Actions.sh("/bin/cp -R #{iphoneos_framework} #{output}/", log: true)
-      end
-
       def self.run(params)
-        workspace =  params[:workspace]
-        scheme =  params[:scheme]
-        project =  params[:project]
+        workspace     =  params[:workspace]
+        scheme        =  params[:scheme]
+        project       =  params[:project]
         configuration = "Debug"
 
         if params.key? :configuration
@@ -36,7 +17,7 @@ module Fastlane
 
         derivedDataPath = 'derivedData'
         if params.key? :derivedDataPath
-          derivedDataPath = params[:derivedDataPath]
+          derivedDataPath = params[:derived_data_path]
         end
 
         Fastlane::Actions::ClearDerivedDataAction.run(
@@ -70,12 +51,11 @@ module Fastlane
           output = "#{params[:output_dir]}"
         end
 
-        lipo(
+        Helper::IOSFrameworkHelper.lipo(
           output: output,
           framework_name: "#{scheme}",
           iphoneos_framework: iphoneos_framework,
-          simulator_framework: simulator_framework, 
-          )
+          simulator_framework: simulator_framework)
 
         Fastlane::Actions::ClearDerivedDataAction.run(derived_data_path: derivedDataPath)
       end
@@ -101,7 +81,9 @@ module Fastlane
         [
           ['workspace', 'The workspace to use'],
           ['scheme', 'The scheme to build'],
-          ['configuration', 'build configuration']
+          ['configuration', 'build configuration'],
+          ['derived_data_path', 'Derived data path'],
+          ['output_dir', 'Output dir']
         ]
       end
 
