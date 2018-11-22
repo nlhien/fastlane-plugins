@@ -79,7 +79,7 @@ module Fastlane
              UI.user_error!("Please include the protocol in the server url, e.g. https://your.github.server") unless value.include?("//")
            end),
           
-          FastlaneCore::ConfigItem.new(key: :tag_name,
+          FastlaneCore::ConfigItem.new(key: :version,
            env_name: "FL_GET_GITHUB_RELEASE_VERSION",
            description: "The version tag of the release to check"),
 
