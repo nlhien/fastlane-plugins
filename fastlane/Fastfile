@@ -1,10 +1,3 @@
 lane :test do
-	# build_ios_framework(
-	# 	project: 'Test/Test.xcodeproj',
-	# 	scheme: 'Test'
-	# )
 
-	ios_app_deploy(ipa: './WatchKity.ipa', 
-		app_name: 'WatchKity', 
-		phone_uuid: '0ffc55e2da21d3401d2ac8acfea680c93300f9dd')
 end
