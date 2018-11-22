@@ -7,11 +7,11 @@ module Fastlane
     class DeleteGithubReleaseAction < Action
       def self.run(params)
 
-        UI.message("Deleting release on GitHub (#{params[:server_url]}/#{params[:url]}: #{params[:tag_name]})")
+        UI.message("Deleting release on GitHub (#{params[:server_url]}/#{params[:url]}: #{params[:version]})")
         
         release = GetGithubReleaseAction.run(url: "Misfit-Wearables/fossil-ble-sdk-ios", 
           server_url: "https://api.github.com",
-          version: params[:tag_name],
+          version: params[:version],
           api_token: params[:api_token])
 
         if release == nil
@@ -41,7 +41,7 @@ module Fastlane
               server_url: params[:server_url],
               api_token: params[:api_token],
               http_method: 'DELETE',
-              path: "repos/#{params[:url]}/git/refs/tags/#{params[:tag_name]}")
+              path: "repos/#{params[:url]}/git/refs/tags/#{params[:version]}")
             end
       end
 
