@@ -33,5 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('simplecov')
   spec.add_development_dependency('fastlane', '>= 2.108.0')
 
+  spec.add_dependency('cocoapods', '>= 1.5.3')
   spec.add_dependency('rest-client', '>= 2.0.2')
 end
