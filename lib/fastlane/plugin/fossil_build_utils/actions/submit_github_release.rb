@@ -43,7 +43,7 @@ module Fastlane
           is_prerelease: is_prerelease,
           commitish: branch_name,
           description: (File.read("changelog") rescue "No changelog provided"),
-          name: "v#{version}",
+          name: "#{version}",
           tag_name: "#{version}")
       end
 
