@@ -1,3 +1,10 @@
 lane :test do
+	release = submit_github_release(
+		version: "BETA-1.0.1", 
+		is_prerelease: true,
+		repository: "nlhien/fastlane-actions",
+		api_token: "ce12194703675e0c251fe84d5eba1329356627ca"
+	)
 
+	UI.message("New release: #{release}")
 end

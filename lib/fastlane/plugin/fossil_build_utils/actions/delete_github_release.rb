@@ -7,42 +7,46 @@ module Fastlane
     class DeleteGithubReleaseAction < Action
       def self.run(params)
 
-        UI.message("Deleting release on GitHub (#{params[:server_url]}/#{params[:url]}: #{params[:version]})")
+        release_id          = params[:release_id]
+        api_token           = params[:api_token]
+        repository          = params[:repository]
+        server_url          = params[:server_url]
+        tag_name            = params[:tag_name]
+
+        UI.message("Deleting release on GitHub (#{params[:server_url]}/#{repository}: #{params[:release_id]})")
         
-        release = GetGithubReleaseAction.run(url: "Misfit-Wearables/fossil-ble-sdk-ios", 
-          server_url: "https://api.github.com",
-          version: params[:version],
-          api_token: params[:api_token])
-
-        if release == nil
-          return
-        end
-
-        release_id = release['id']
-
-        GithubApiAction.run(
+        response = other_action.github_api(
           server_url: params[:server_url],
           api_token: params[:api_token],
           http_method: 'DELETE',
-          path: "repos/#{params[:url]}/releases/#{release_id}",
+          path: "repos/#{repository}/releases/#{release_id}",
           error_handlers: {
             404 => proc do |result|
-              UI.error("Repository #{params[:url]} cannot be found, please double check its name and that you provided a valid API token (if it's a private repository).")
+              UI.error("Repository #{repository} cannot be found, please double check its name and that you provided a valid API token (if it's a private repository).")
+              return false              
             end,
             401 => proc do |result|
-              UI.error("You are not authorized to access #{params[:url]}, please make sure you provided a valid API token.")
+              UI.error("You are not authorized to access #{repository}, please make sure you provided a valid API token.")
+              return false              
             end,
             '*' => proc do |result|
               UI.error("GitHub responded with #{result[:status]}:#{result[:body]}")
+              return false
             end
-          }
-          ) do |result|
-            GithubApiAction.run(
-              server_url: params[:server_url],
-              api_token: params[:api_token],
-              http_method: 'DELETE',
-              path: "repos/#{params[:url]}/git/refs/tags/#{params[:version]}")
-            end
+          })
+
+        if response[:status] != 204
+          UI.message("Delete result: #{result}")
+          return false
+        end
+
+        response = other_action.github_api(
+          server_url: params[:server_url],
+          api_token: params[:api_token],
+          http_method: 'DELETE',
+          path: "repos/#{repository}/git/refs/tags/#{tag_name}")
+
+        return response[:status] == 204
       end
 
       #####################################################
@@ -62,7 +66,7 @@ module Fastlane
       def self.available_options
         # Below a few examples
         [
-          FastlaneCore::ConfigItem.new(key: :url,
+          FastlaneCore::ConfigItem.new(key: :repository,
            env_name: "FL_GET_GITHUB_RELEASE_URL",
            description: "The path to your repo, e.g. 'KrauseFx/fastlane'",
            verify_block: proc do |value|
@@ -79,15 +83,20 @@ module Fastlane
              UI.user_error!("Please include the protocol in the server url, e.g. https://your.github.server") unless value.include?("//")
            end),
           
-          FastlaneCore::ConfigItem.new(key: :version,
+          FastlaneCore::ConfigItem.new(key: :release_id,
            env_name: "FL_GET_GITHUB_RELEASE_VERSION",
-           description: "The version tag of the release to check"),
+           is_string: false,
+           description: "The id of the release to delete"),
 
           FastlaneCore::ConfigItem.new(key: :api_token,
            env_name: "FL_GITHUB_RELEASE_API_TOKEN",
            sensitive: true,
            description: "GitHub Personal Token (required for private repositories)",
-           optional: true)
+           optional: true),
+
+          FastlaneCore::ConfigItem.new(key: :tag_name,
+           env_name: "FL_SUBMIT_GITHUB_RELEASE_DEVELOPMENT",
+           description: "Create a development certificate instead of a distribution one")
 
         ]
       end
