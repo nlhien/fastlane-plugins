@@ -13,13 +13,16 @@ module Fastlane
         api_token           = params[:api_token]
         repository          = params[:repository]
         server_url          = params[:server_url]
+        allow_override      = params[:allow_override]
 
         release = other_action.get_github_release(url: repository, 
           version: version, api_token: api_token, server_url: server_url)
 
         if release
-          if !UI.confirm("The release #{version} already exists. Do you want to override?")
-            return nil
+          if !allow_override
+            if !UI.confirm("The release #{version} already exists. Do you want to override?")
+              return nil
+            end
           end
 
           release_id = release['id']
@@ -96,8 +99,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :repository,
            env_name: "FL_SUBMIT_GITHUB_RELEASE_DEVELOPMENT",
            description: "Create a development certificate instead of a distribution one",
-                                       is_string: false, # true: verifies the input is a string, false: every kind of value
-                                       default_value: false), # the default value if the user didn't provide one
+                                       is_string: true), # the default value if the user didn't provide one
 
           FastlaneCore::ConfigItem.new(key: :server_url,
            env_name: "FL_GITHUB_RELEASE_SERVER_URL",
@@ -107,6 +109,12 @@ module Fastlane
            verify_block: proc do |value|
              UI.user_error!("Please include the protocol in the server url, e.g. https://your.github.server") unless value.include?("//")
            end),
+
+          FastlaneCore::ConfigItem.new(key: :allow_override,
+           env_name: "FL_SUBMIT_GITHUB_RELEASE_DEVELOPMENT",
+           description: "Allow to delete the current release",
+                                       is_string: false, # true: verifies the input is a string, false: every kind of value
+                                       default_value: false), # the default value if the user didn't provide one
         ]
       end
 
