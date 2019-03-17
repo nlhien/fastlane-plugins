@@ -16,7 +16,7 @@ module Fastlane
         end
 
         derivedDataPath = 'derivedData'
-        if params.key? :derivedDataPath
+        if params.key? :derived_data_path
           derivedDataPath = params[:derived_data_path]
         end
 
