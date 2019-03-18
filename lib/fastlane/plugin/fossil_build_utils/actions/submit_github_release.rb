@@ -14,6 +14,7 @@ module Fastlane
         repository          = params[:repository]
         server_url          = params[:server_url]
         allow_override      = params[:allow_override]
+        upload_assets       = params[:upload_assets]
 
         release = other_action.get_github_release(url: repository, 
           version: version, api_token: api_token, server_url: server_url)
@@ -47,6 +48,7 @@ module Fastlane
           commitish: branch_name,
           description: (File.read("changelog") rescue "No changelog provided"),
           name: "#{version}",
+          upload_assets: upload_assets,
           tag_name: "#{version}")
       end
 
@@ -115,6 +117,16 @@ module Fastlane
            description: "Allow to delete the current release",
                                        is_string: false, # true: verifies the input is a string, false: every kind of value
                                        default_value: false), # the default value if the user didn't provide one
+
+          FastlaneCore::ConfigItem.new(key: :upload_assets,
+                                       env_name: "FL_SET_GITHUB_RELEASE_UPLOAD_ASSETS",
+                                       description: "Path to assets to be uploaded with the release",
+                                       optional: true,
+                                       is_string: false,
+                                       type: Array,
+                                       verify_block: proc do |value|
+                                         UI.user_error!("upload_assets must be an Array of paths to assets") unless value.kind_of?(Array)
+                                       end)                                       
         ]
       end
 
