@@ -1,10 +1,18 @@
 lane :test do
-	release = submit_github_release(
-		version: "BETA-1.0.1", 
-		is_prerelease: true,
-		repository: "nlhien/fastlane-actions",
-		api_token: "ce12194703675e0c251fe84d5eba1329356627ca"
-	)
+	# release = submit_github_release(
+	# 	version: "BETA-1.0.1", 
+	# 	is_prerelease: true,
+	# 	repository: "nlhien/fastlane-actions",
+	# 	api_token: "ce12194703675e0c251fe84d5eba1329356627ca"
+	# )
 
-	UI.message("New release: #{release}")
+	response = submit_github_file(
+  		repository_name: "nlhien/fastlane-actions",
+  		server_url: "https://api.github.com",
+  		api_token: "98b01635748275f5ae5e77b5b3bd68c109ee837e",
+  		message: "Add my new file",
+  		branch: "master",
+  		path: "file-1.txt"
+	)
+	UI.message("New release: #{response}")
 end
