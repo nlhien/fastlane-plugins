@@ -15,6 +15,7 @@ module Fastlane
 
         UI.message("Deleting release on GitHub (#{params[:server_url]}/#{repository}: #{params[:release_id]})")
         
+        # Deleting Release
         response = other_action.github_api(
           server_url: params[:server_url],
           api_token: params[:api_token],
@@ -33,20 +34,28 @@ module Fastlane
               UI.error("GitHub responded with #{result[:status]}:#{result[:body]}")
               return false
             end
-          })
-
-        if response[:status] != 204
-          UI.message("Delete result: #{result}")
-          return false
-        end
-
+        })
+        # Deleting git tag
         response = other_action.github_api(
           server_url: params[:server_url],
           api_token: params[:api_token],
           http_method: 'DELETE',
-          path: "repos/#{repository}/git/refs/tags/#{tag_name}")
-
-        return response[:status] == 204
+          path: "repos/#{repository}/git/refs/tags/#{tag_name}",
+          error_handlers: {
+            404 => proc do |result|
+              UI.error("Repository #{repository} cannot be found, please double check its name and that you provided a valid API token (if it's a private repository).")
+              return false              
+            end,
+            401 => proc do |result|
+              UI.error("You are not authorized to access #{repository}, please make sure you provided a valid API token.")
+              return false              
+            end,
+            '*' => proc do |result|
+              UI.error("GitHub responded with #{result[:status]}:#{result[:body]}")
+              return false
+            end
+          })
+        return true
       end
 
       #####################################################

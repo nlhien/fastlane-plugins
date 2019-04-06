@@ -8,13 +8,14 @@ module Fastlane
       def self.run(params)
         # fastlane will take care of reading in the parameter and fetching the environment variable:
         version             = params[:version]
-        branch_name         = params[:branch_name]
+        commitish           = params[:commitish]
         is_prerelease       = params[:is_prerelease]
         api_token           = params[:api_token]
         repository          = params[:repository]
         server_url          = params[:server_url]
         allow_override      = params[:allow_override]
         upload_assets       = params[:upload_assets]
+        changelog_url       = params[:changelog_url]
 
         release = other_action.get_github_release(url: repository, 
           version: version, api_token: api_token, server_url: server_url)
@@ -39,14 +40,23 @@ module Fastlane
             UI.message("Failed to delete release")
             return nil
           end
+
+          UI.message("Deleted release: #{release_id}")
         end
+
+        UI.message("Starting submit github release:
+            - commitish: #{commitish}
+            - is_prerelease: #{is_prerelease}
+            - version: #{version}
+            - tag_name: #{version}
+          ")
 
         return other_action.set_github_release(
           repository_name: repository,
           api_token: api_token,
           is_prerelease: is_prerelease,
-          commitish: branch_name,
-          description: (File.read("changelog") rescue "No changelog provided"),
+          commitish: commitish,
+          description: (File.read(changelog_url) rescue "No changelog provided"),
           name: "#{version}",
           upload_assets: upload_assets,
           tag_name: "#{version}")
@@ -86,7 +96,7 @@ module Fastlane
                                        is_string: false, # true: verifies the input is a string, false: every kind of value
                                        default_value: false), # the default value if the user didn't provide one
 
-          FastlaneCore::ConfigItem.new(key: :branch_name,
+          FastlaneCore::ConfigItem.new(key: :commitish,
            env_name: "FL_SUBMIT_GITHUB_RELEASE_DEVELOPMENT",
            description: "Create a development certificate instead of a distribution one",
                                        is_string: false, # true: verifies the input is a string, false: every kind of value
@@ -117,6 +127,11 @@ module Fastlane
            description: "Allow to delete the current release",
                                        is_string: false, # true: verifies the input is a string, false: every kind of value
                                        default_value: false), # the default value if the user didn't provide one
+          
+          FastlaneCore::ConfigItem.new(key: :changelog_url,
+            env_name: "FL_SUBMIT_GITHUB_RELEASE_CHANGELOG",
+            description: "The release change log",
+            is_string: true, optional: true), # the default value if the user didn't provide one
 
           FastlaneCore::ConfigItem.new(key: :upload_assets,
                                        env_name: "FL_SET_GITHUB_RELEASE_UPLOAD_ASSETS",
