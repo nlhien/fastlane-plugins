@@ -40,7 +40,11 @@ module Fastlane
             UI.message("Failed to delete release")
             return nil
           end
+
+          UI.message("Deleted release: #{release_id}")
         end
+
+        sleep 5
 
         UI.message("Starting submit github release:
             - commitish: #{commitish}
