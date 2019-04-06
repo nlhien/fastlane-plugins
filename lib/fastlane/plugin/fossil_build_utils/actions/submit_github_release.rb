@@ -44,8 +44,6 @@ module Fastlane
           UI.message("Deleted release: #{release_id}")
         end
 
-        sleep 5
-
         UI.message("Starting submit github release:
             - commitish: #{commitish}
             - is_prerelease: #{is_prerelease}
