@@ -31,8 +31,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rubocop', '0.49.1')
   spec.add_development_dependency('rubocop-require_tools')
   spec.add_development_dependency('simplecov')
-  spec.add_development_dependency('fastlane', '>= 2.108.0')
-
+  spec.add_development_dependency('fastlane', '>= 2.127.0')
+  spec.add_dependency('mini_magick', '>= 4.9.4', '< 5.0.0')
   spec.add_dependency('cocoapods', '>= 1.5.3')
   spec.add_dependency('rest-client', '>= 2.0.2')
 end
